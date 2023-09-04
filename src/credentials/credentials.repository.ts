@@ -9,7 +9,7 @@ export class CredentialsRepository {
 
   create(createCredentialDto: CreateCredentialDto) {
     return this.db().create({
-      data: createCredentialDto
+      data: {...createCredentialDto, userId: 1}
     });
   }
 

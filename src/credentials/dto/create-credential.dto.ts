@@ -1,10 +1,6 @@
 import { IsNotEmpty, IsNumber, IsString } from "class-validator";
 
 export class CreateCredentialDto {
-  @IsNumber()
-  @IsNotEmpty()
-  userId: number;
-
   @IsString()
   @IsNotEmpty()
   url: string;
