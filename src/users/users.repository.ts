@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
+import * as bcrypt from "bcrypt";
 
 @Injectable()
 export class UsersRepository {
@@ -10,7 +10,10 @@ export class UsersRepository {
 
   create(createUserDto: CreateUserDto) {
     return this.db().create({
-      data: createUserDto
+      data: {
+        ...createUserDto, 
+        password: bcrypt.hashSync(createUserDto.password, 10)
+      }
     });
   }
 

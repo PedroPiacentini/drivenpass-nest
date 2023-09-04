@@ -2,11 +2,17 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UsersRepository } from './users.repository';
+import * as bcrypt from "bcrypt";
+import { JwtService } from '@nestjs/jwt';
+import { User } from '@prisma/client';
 
 @Injectable()
 export class UsersService {
 
-  constructor (private readonly repository: UsersRepository) {}
+  constructor (
+    private readonly jwtService: JwtService,
+    private readonly repository: UsersRepository
+    ) {}
 
   async register(createUserDto: CreateUserDto) {
     const {email} = createUserDto;
@@ -21,25 +27,23 @@ export class UsersService {
     const user = await this.repository.findByEmail(email);
     if (!user) throw new HttpException("Wrong email or password", HttpStatus.UNAUTHORIZED);
 
-    return user;
-  }
-  
-  async findAll() {
-    return this.repository.findAll();
-  }
+    const valid = await bcrypt.compare(password, user.password);
+    if (!valid) throw new HttpException("Wrong email or password", HttpStatus.UNAUTHORIZED);
 
-  async findOne(id: number) {
-    const user = await this.repository.findOne(id);
-    if (!user) throw new HttpException("user not found", HttpStatus.NOT_FOUND);
-
-    return user;
-  }
-
-  async update(id: number, updateUserDto: UpdateUserDto) {
-    return `This action updates a #${id} user`;
+    return this.createToken(user);
   }
 
   async remove(id: number) {
     return `This action removes a #${id} user`;
+  }
+
+  createToken(user: User) {
+    const {email, id} = user;
+    const token = this.jwtService.sign(
+      {email, id}, 
+      {subject: String(id)}
+    )
+
+    return {token};
   }
 }
