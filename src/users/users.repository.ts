@@ -18,21 +18,6 @@ export class UsersRepository {
     return this.db().findUnique({where: {email}});
   }
 
-  findAll() {
-    return this.db().findMany();
-  }
-
-  findOne(id: number) {
-    return this.db().findUnique({where: {id}});
-  }
-
-  update(id: number, updateUserDto: UpdateUserDto) {
-    return this.db().update({
-      where: {id},
-      data: updateUserDto
-    });
-  }
-
   remove(id: number) {
     return this.db().delete({where: {id}});
   }
