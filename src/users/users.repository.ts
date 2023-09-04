@@ -8,14 +8,14 @@ export class UsersRepository {
 
   constructor (private readonly prisma: PrismaService) {}
 
-  db() {
-    return this.prisma.user;
-  }
-
   create(createUserDto: CreateUserDto) {
     return this.db().create({
       data: createUserDto
     });
+  }
+
+  findByEmail(email: string) {
+    return this.db().findUnique({where: {email}});
   }
 
   findAll() {
@@ -35,5 +35,9 @@ export class UsersRepository {
 
   remove(id: number) {
     return this.db().delete({where: {id}});
+  }
+
+  db() {
+    return this.prisma.user;
   }
 }
